@@ -24,8 +24,8 @@ class Buffer {
  public:
     Buffer(const int count) :
         size(count),
-        data(new int[count]),
-        realSize(0) {}
+        realSize(0),
+        data(new int[count]) {}
 
     ~Buffer() {
         delete[] data;
@@ -57,45 +57,23 @@ class Buffer {
 
     Bounds localizeSearch(const int elem) {
         Bounds bounds = Bounds(0, 2);
-
         while (elem > data[bounds.right-1] && bounds.right != bounds.left) {
             int tmp = bounds.right;
             bounds.right = std::min(bounds.right * 2, realSize);
             bounds.left = tmp;
         }
-
         return bounds;
     }
 
     int getNearest(const int elem) {
         Bounds bounds = localizeSearch(elem);
         if (bounds.right == bounds.left) {
-            std::cout << "ZALUPA1    " ;
             return bounds.left - 1;
         }
 
         int idx = binarySearch(elem, bounds.left, bounds.right);
-        if (idx == 0) {
-            std::cout << "ZALUPA2    " ;
-            return idx;
-        }
 
-        if (data[idx] - elem >= elem - data[idx - 1]) {
-            std::cout << "ZALUPA3    " ;
-            return idx - 1;
-        } else {
-            std::cout << "ZALUPA3    " ;
-            return idx;
-        }
-
-
-    }
-
-    void print() {
-        for (int i = 0; i != realSize; i++) {
-            std::cout << data[i] << " ";
-        }
-        std::cout << std::endl;
+        return (idx == 0 || data[idx] - elem < elem - data[idx - 1]) ? idx : idx - 1;
     }
 
  private:
@@ -108,51 +86,48 @@ int run(std::istream& input) {
     int n = 0;
     input >> n;
     assert(n > 0 && n <= 110000);
-    Buffer * A = new Buffer(n);
+    Buffer A = Buffer(n);
     for (int i = 0; i != n; i++) {
         int elem = 0;
         input >> elem;
-        A->addElem(elem);
+        A.addElem(elem);
     }
 
     int m = 0;
     input >> m;
     assert(m > 0 && m <= 1000);
-    Buffer * B = new Buffer(m);
+    Buffer B = Buffer(m);
     for (int i = 0; i != m; i++) {
         int elem = 0;
         input >> elem;
-        B->addElem(elem);
+        B.addElem(elem);
     }
 
-    // std::cout << A->getNearest(401) << std::endl;
-
-    for (int i = 0; i != B->getSize(); i++) {
-        std::cout << i << ")   elem = " << B->getElem(i);
-        std::cout << "     idx = " << A->getNearest(B->getElem(i)) << std::endl;
+    for (int i = 0; i != B.getSize(); i++) {
+        std::cout << A.getNearest(B.getElem(i)) << " ";
     }
+    std::cout << std::endl;
 
-    delete A;
     return 0;
 }
 
-int test() {
-    // {
-    //     std::stringstream input;
-    //     input << "20" << std::endl;
-    //     input << "2 4 24 40 70 78 90 91 92 93 94 95 96 97 132 156 192 198 290 400" << std::endl;
-    //     input << "16" << std::endl;
-    //     input << "0 1 2 3 4 13 14 45 56 77 78 76 87 291 399 500" << std::endl;
-    //     run(input);
-    // }
-    // {
-    //     std::stringstream input;
-    //     input << "3" << std::endl;
-    //     input << "10 20 30" << std::endl;
-    //     input << "3" << std::endl;
-    //     input << "9 15 35" << std::endl;
-    //     run(input);
-    // }
+void test() {
+    {
+        std::stringstream input;
+        input << "20" << std::endl;
+        input << "2 4 24 40 70 78 90 91 92 93 94 95 96 97 132 156 192 198 290 400" << std::endl;
+        input << "16" << std::endl;
+        input << "0 1 2 3 4 13 14 45 56 77 78 76 87 291 399 500" << std::endl;
+        run(input);
+    }
+    {
+        std::stringstream input;
+        input << "3" << std::endl;
+        input << "10 20 30" << std::endl;
+        input << "3" << std::endl;
+        input << "9 15 35" << std::endl;
+        run(input);
+    }
     {
         std::stringstream input;
         input << "3" << std::endl;
@@ -184,14 +159,11 @@ int main(int argc, char const *argv[]) {
     //     B->addElem(elem);
     // }
 
-    // A->print();
-    // B->print();
+    // for (int i = 0; i != B->getSize(); i++) {
+    //     std::cout << A->getNearest(B->getElem(i)) << " ";
+    // }
+    // std::cout << std::endl;
 
-    // delete A;
-    // delete B;
-
-    // run(std::cin; std::cout);
     test();
-
     return 0;
 }
