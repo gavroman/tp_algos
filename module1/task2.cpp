@@ -43,6 +43,22 @@ class Buffer {
         return realSize;
     }
 
+    int getNearest(const int elem) {
+        Bounds bounds = localizeSearch(elem);
+        if (bounds.right == bounds.left) {
+            return bounds.left - 1;
+        }
+
+        int idx = binarySearch(elem, bounds.left, bounds.right);
+
+        return (idx == 0 || data[idx] - elem < elem - data[idx - 1]) ? idx : idx - 1;
+    }
+
+ private:
+    int size;
+    int realSize;
+    int * data;
+
     int binarySearch(int elem, int left, int right) {
         while (left < right) {
             int mid = (left + right) / 2;
@@ -64,106 +80,34 @@ class Buffer {
         }
         return bounds;
     }
-
-    int getNearest(const int elem) {
-        Bounds bounds = localizeSearch(elem);
-        if (bounds.right == bounds.left) {
-            return bounds.left - 1;
-        }
-
-        int idx = binarySearch(elem, bounds.left, bounds.right);
-
-        return (idx == 0 || data[idx] - elem < elem - data[idx - 1]) ? idx : idx - 1;
-    }
-
- private:
-    int size;
-    int realSize;
-    int * data;
 };
 
-int run(std::istream& input) {
+
+int main(int argc, char const *argv[]) {
     int n = 0;
-    input >> n;
+    std::cin >> n;
     assert(n > 0 && n <= 110000);
-    Buffer A = Buffer(n);
+    Buffer * A = new Buffer(n);
     for (int i = 0; i != n; i++) {
         int elem = 0;
-        input >> elem;
-        A.addElem(elem);
+        std::cin >> elem;
+        A->addElem(elem);
     }
 
     int m = 0;
-    input >> m;
+    std::cin >> m;
     assert(m > 0 && m <= 1000);
-    Buffer B = Buffer(m);
+    Buffer * B = new Buffer(m);
     for (int i = 0; i != m; i++) {
         int elem = 0;
-        input >> elem;
-        B.addElem(elem);
+        std::cin >> elem;
+        B->addElem(elem);
     }
 
-    for (int i = 0; i != B.getSize(); i++) {
-        std::cout << A.getNearest(B.getElem(i)) << " ";
+    for (int i = 0; i != B->getSize(); i++) {
+        std::cout << A->getNearest(B->getElem(i)) << " ";
     }
     std::cout << std::endl;
 
-    return 0;
-}
-
-void test() {
-    {
-        std::stringstream input;
-        input << "20" << std::endl;
-        input << "2 4 24 40 70 78 90 91 92 93 94 95 96 97 132 156 192 198 290 400" << std::endl;
-        input << "16" << std::endl;
-        input << "0 1 2 3 4 13 14 45 56 77 78 76 87 291 399 500" << std::endl;
-        run(input);
-    }
-    {
-        std::stringstream input;
-        input << "3" << std::endl;
-        input << "10 20 30" << std::endl;
-        input << "3" << std::endl;
-        input << "9 15 35" << std::endl;
-        run(input);
-    }
-    {
-        std::stringstream input;
-        input << "3" << std::endl;
-        input << "10 20 30" << std::endl;
-        input << "4" << std::endl;
-        input << "8 9 10 32" << std::endl;
-        run(input);
-    }
-}
-
-int main(int argc, char const *argv[]) {
-    // int n = 0;
-    // std::cin >> n;
-    // assert(n > 0 && n <= 110000);
-    // Buffer * A = new Buffer(n);
-    // for (int i = 0; i != n; i++) {
-    //     int elem = 0;
-    //     std::cin >> elem;
-    //     A->addElem(elem);
-    // }
-
-    // int m = 0;
-    // std::cin >> m;
-    // assert(m > 0 && m <= 1000);
-    // Buffer * B = new Buffer(m);
-    // for (int i = 0; i != m; i++) {
-    //     int elem = 0;
-    //     std::cin >> elem;
-    //     B->addElem(elem);
-    // }
-
-    // for (int i = 0; i != B->getSize(); i++) {
-    //     std::cout << A->getNearest(B->getElem(i)) << " ";
-    // }
-    // std::cout << std::endl;
-
-    test();
     return 0;
 }
