@@ -1,0 +1,278 @@
+/* 3_3. Реализовать очередь с помощью двух стеков.
+ * Использовать стек, реализованный с помощью динамического буфера.
+ * Требования: Очередь должна быть реализована в виде класса.
+ * Стек тоже должен быть реализован в виде класса.
+ */
+
+#include <sstream>
+#include <iostream>
+#include <assert.h>
+
+class Buffer {
+ public:
+    Buffer() :
+        initialSize(4),
+        size(initialSize),
+        realSize(0),
+        data(new int[size]) {}
+
+    ~Buffer() {
+        delete[] data;
+    }
+
+    int getSize() {
+        return realSize;
+    }
+
+    int getElem() {
+        int deletedElem = data[--realSize];
+        int * newData = new int[realSize];
+
+        for (int i = 0; i != realSize; i++) {
+            newData[i] = data[i];
+        }
+
+        delete[] data;
+        data = newData;
+        return deletedElem;
+    }
+
+    void addElem(const int elem) {
+        if(realSize == size) {
+            grow();
+        }
+        data[realSize++] = elem;
+    }
+
+ private:
+    int initialSize;
+    int size;
+    int realSize;
+    int * data;
+
+    void grow() {
+        int newSize = size * 2;
+        int * newData = new int[newSize];
+        for (int i = 0; i != realSize; i++) {
+            newData[i] = data[i];
+        }
+        delete[] data;
+        data = newData;
+        size = newSize;
+    }
+};
+
+class Queue {
+ public:
+    Queue() :
+    inputStack(),
+    outputStack() {}
+    ~Queue() {}
+
+    bool isEmpty() {
+        return (!inputStack.getSize() && !outputStack.getSize());
+    }
+
+    void pushBack(const int elem) {
+        inputStack.addElem(elem);
+    }
+
+    int popFront() {
+        if (!outputStack.getSize() && !inputStack.getSize()) {
+            return -1;
+        }
+        if (!outputStack.getSize() && inputStack.getSize()) {
+            stackExchange();
+        }
+        return outputStack.getElem();
+    }
+
+ private:
+    void stackExchange() {
+        int stackSize =  inputStack.getSize();
+        for (int i = 0; i != stackSize; i++) {
+            // Удаляем последний элемент из inputStack, и добавляем его в outputStack
+            outputStack.addElem(inputStack.getElem());
+        }
+    }
+
+    Buffer inputStack;
+    Buffer outputStack;
+};
+
+
+int run(std::istream& input, std::ostream& output) {
+    Queue queue;
+    int commandsCount = 0;
+    input >> commandsCount;
+    assert(commandsCount >= 0 && commandsCount <= 1000000);
+    int i = 0;
+    for (i = 0; i != commandsCount; i++) {
+        int command = 0;
+        int value = 0;
+        input >> command >> value;
+        int deqValue = -1; // если очередь пустая, то значение должно быть -1
+        switch (command) {
+            case 2:
+                if (!queue.isEmpty()) {
+                    deqValue = queue.popFront();
+                }
+                if (deqValue != value) {
+                    std::cout << "NO" << std::endl;
+                    output << "NO" << std::endl;
+                    return i;
+                }
+                break;
+            case 3:
+                queue.pushBack(value);
+                break;
+            default:
+                std::cout << "NO" << std::endl;
+                output << "NO" << std::endl;
+                return i;
+        }
+    }
+    std::cout << "YES" << std::endl;
+    output << "YES" << std::endl;
+
+    return i;
+}
+
+void test() {
+    {
+        std::stringstream input;
+        std::stringstream output;
+
+        input << "3" << std::endl;
+        input << "3 44" << std::endl;
+        input << "3 50" << std::endl;
+        input << "2 44" << std::endl;
+        run(input, output);
+        //std::string s = output.str();
+        //for (int i = 0; i < s.size(); ++i) {
+        //    std::cout << std::hex << (unsigned int)s[i] << std::endl;
+        //}
+        //std::cout << output.str() << std::endl;
+        assert(output.str() == "YES\n");
+    }
+
+    // тестируем пустой ввод
+
+    // тестируем пукт условия "Если команда pop вызвана для пустой структуры данных, то ожидается “-1”."
+    {
+        std::stringstream input;
+        std::stringstream output;
+
+        input << "1" << std::endl;
+        input << "2 -1" << std::endl;
+        run(input, output);
+
+        assert(output.str() == "YES\n");
+    }
+    // тестируем на вставку, а потом извлечение большого кол-ва элементов
+    {
+        std::stringstream input;
+        std::stringstream output;
+        int count = 10000; // можно даже больше взять
+        int commands_count = count * 2 + 1 ;
+        input << commands_count << std::endl;
+        for (int i = 0; i < count; i++) {
+            input << "3 " << i << std::endl;
+        }
+        for (int i = 0; i < count; i++) {
+            input << "2 " << i << std::endl;
+        }
+        input << "2 -1" << std::endl;
+        int res = run(input, output);
+
+        assert(output.str() == "YES\n");
+
+        // проверим, что обработали столько команд, сколько ожидали
+        assert(res == commands_count );
+    }
+
+    // проверим на последовательную вставку/извлечение большого кол-ва элементов
+    {
+        std::stringstream input;
+        std::stringstream output;
+        int count = 10000;
+        input << count * 2 + 1 << std::endl;
+        for (int i = 0; i < count; i++) {
+            input << "3 " << i << std::endl;
+            input << "2 " << i << std::endl;
+        }
+        input << "2 -1" << std::endl;
+        run(input, output);
+
+        assert(output.str() == "YES\n");
+    }
+
+    // проверим только извлечение
+    {
+        std::stringstream input;
+        std::stringstream output;
+        int count = 10000;
+        input << count << std::endl;
+        for (int i = 0; i < count; i++) {
+            input << "3 " << i << std::endl;
+        }
+        run(input, output);
+
+        assert(output.str() == "YES\n");
+    }
+
+    // запрашиваем элементы из очереди в неправильном порядке
+    {
+        std::stringstream input;
+        std::stringstream output;
+        int count = 10000;
+        input << count * 2 << std::endl;
+        for (int i = 0; i < count; i++) {
+            input << "3 " << i << std::endl;
+        }
+        for (int i = count; i >= 0; i--) {
+            input << "2 " << i << std::endl;
+        }
+        run(input, output);
+
+        assert(output.str() == "NO\n");
+    }
+    {
+        std::stringstream input;
+        std::stringstream output;
+
+        run(input, output);
+
+        assert(output.str() == "YES\n");
+    }
+}
+
+int main(int argc, char const *argv[]) {
+    // Queue queue;
+    // int commandsCount = 0;
+    // std::cin >> commandsCount;
+    // assert(commandsCount >= 0 && commandsCount <= 1000000);
+    // for (int i = 0; i != commandsCount; i++) {
+    //     int command = 0;
+    //     int value = 0;
+    //     std::cin >> command >> value;
+    //     switch (command) {
+    //         case 2:
+    //             if (queue.popFront() != value) {
+    //                 std::cout << "NO" << std::endl;
+    //                 return 0;
+    //             }
+    //             break;
+    //         case 3:
+    //             queue.pushBack(value);
+    //             break;
+    //         default:
+    //             std::cout << "NO" << std::endl;
+    //             return 0;
+    //     }
+    // }
+    // std::cout << "YES" << std::endl;
+    test();
+
+    return 0;
+}
