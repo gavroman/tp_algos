@@ -60,8 +60,6 @@ class Queue {
     outputStack() {}
     ~Queue() {}
 
-
-
     bool runCommand(int command, int value) {
         int deqValue = -1; // если очередь пустая, то значение должно быть -1
         switch (command) {
@@ -80,7 +78,7 @@ class Queue {
                 return false;
         }
         return true;
-}
+    }
 
  private:
     bool isEmpty() {
