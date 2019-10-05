@@ -9,7 +9,6 @@
  * Формат выходных данных. Разделенные пробелом значения максимумов для каждого положения окна.
  */
 
-
 #include <sstream>
 #include <iostream>
 #include <assert.h>
@@ -60,13 +59,6 @@ class Buffer {
         return (realSize == 0);
     }
 
-    // void print() {
-    //     for (int i = 0; i != realSize; i++) {
-    //         std::cout << data[i] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
  private:
     int initialSize;
     int size;
@@ -87,7 +79,6 @@ class Buffer {
 
 
 template <typename T>
-
 class MaxHeap {
  public:
     MaxHeap() : arr() {}
@@ -175,97 +166,71 @@ void run(std::istream & input, std::ostream & output) {
         buf.addElem(node);
     }
 
-    // for (int i = 0; i != buf.getSize(); i++) {
-    //     std::cout << buf.getElem(i).index << " " << buf.getElem(i).value << std::endl;
-    // }
-
     int windowSize = 0;
     input >> windowSize;
+    assert(windowSize >= 1 && heapSize <= heapSize);
 
     MaxHeap<Node> heap;
     for (int i = 0; i != windowSize; i++) {
         heap.insert(buf.getElem(i));
     }
-    //heap.print();
-
-
     int left = 0;
     int right = windowSize - 1;
     while (right != heapSize) {
         Node node = heap.getMax();
-        //heap.print();
         if (node.index >= left && node.index <= right) {
-            // std::cout << "ZALUPA" << std::endl;
-            // output << "left = " << left << " right = " << right << std::endl;
-            output << node.value << std::endl;
-            right++;
+            output << node.value << " ";
             left++;
+            right++;
             heap.insert(buf.getElem(right));
         } else {
-            // std::cout << "ZALUPA" << std::endl;
             heap.extraxtMax();
         }
     }
-
-    // for (int left = 0, right = windowSize - 1; right != heapSize; left++, right++) {
-    //     heap.print();
-    //     Node node = heap.getMax();
-    //     if (node.index >= left && node.index <= right) {
-    //         output << "left = " << left << " right = " << right << std::endl;
-    //         output << node.value << std::endl;
-    //     } else {
-    //         std::cout << "ZALUPA" << std::endl;
-    //         heap.extraxtMax();
-    //     }
-    //     heap.insert(buf.getElem(right + 1));
-    // }
-
+    output << std::endl;
 }
 
 void test() {
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "10 ";
-        input << "10 9 8 7 6 5 4 3 2 1 ";
-        input << "5 ";
-
-        run(input, output);
-
-        std::cout << output.str() << std::endl;
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "9" << std::endl;
-        input << "0 7 3 8 4 5 10 4 6" << std::endl;
-        input << "4" << std::endl;
-
-        run(input, output);
-
-        std::cout << output.str() << std::endl;
-    }
     // {
     //     std::stringstream input;
     //     std::stringstream output;
 
-    //     input << "4 ";
-    //     input << "5 10 4 6";
-    //     // input << "1 ";
+    //     input << "10 ";
+    //     input << "10 9 8 7 6 5 4 3 2 1 ";
+    //     input << "10 ";
 
     //     run(input, output);
 
     //     std::cout << output.str() << std::endl;
     // }
+    // {
+    //     std::stringstream input;
+    //     std::stringstream output;
 
+    //     input << "9" << std::endl;
+    //     input << "0 7 3 8 4 5 10 4 6" << std::endl;
+    //     input << "4" << std::endl;
+
+    //     run(input, output);
+
+    //     std::cout << output.str() << std::endl;
+    // }
+    // {
+    //     std::stringstream input;
+    //     std::stringstream output;
+
+    //     input << "4 ";
+    //     input << "5 10 4 6 ";
+    //     input << "1 ";
+
+    //     run(input, output);
+
+    //     std::cout << output.str() << std::endl;
+    // }
 }
 
 int main(int argc, char const *argv[]) {
-    //run(std::cin, std::cout);
-    test();
-
-
+    //test();
+    run(std::cin, std::cout);
     return 0;
 }
