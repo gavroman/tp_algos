@@ -78,7 +78,7 @@ class Buffer {
 };
 
 
-template <typename T>
+template <typename T, class DefaultComparator = std::less>
 class MaxHeap {
  public:
     MaxHeap() : arr() {}
@@ -153,7 +153,7 @@ struct Node {
     explicit Node() : value(0), index(0)  {}
 };
 
-void run(std::istream & input, std::ostream & output) {
+int main(int argc, char const *argv[]) {
     int heapSize = 0;
     input >> heapSize;
     assert(heapSize >= 0 && heapSize < 100000000);
@@ -188,49 +188,5 @@ void run(std::istream & input, std::ostream & output) {
         }
     }
     output << std::endl;
-}
-
-void test() {
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
-
-    //     input << "10 ";
-    //     input << "10 9 8 7 6 5 4 3 2 1 ";
-    //     input << "10 ";
-
-    //     run(input, output);
-
-    //     std::cout << output.str() << std::endl;
-    // }
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
-
-    //     input << "9" << std::endl;
-    //     input << "0 7 3 8 4 5 10 4 6" << std::endl;
-    //     input << "4" << std::endl;
-
-    //     run(input, output);
-
-    //     std::cout << output.str() << std::endl;
-    // }
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
-
-    //     input << "4 ";
-    //     input << "5 10 4 6 ";
-    //     input << "1 ";
-
-    //     run(input, output);
-
-    //     std::cout << output.str() << std::endl;
-    // }
-}
-
-int main(int argc, char const *argv[]) {
-    //test();
-    run(std::cin, std::cout);
     return 0;
 }
