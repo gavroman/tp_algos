@@ -14,46 +14,37 @@
 #include <iostream>
 #include <assert.h>
 
-class Array {
+template <typename T>
+class Buffer {
 
  public:
-    Array(const int count) :
-        initialSize(count),
-        size(initialSize),
+    Buffer() :
+        initialSize(4),
+        size(0),
         realSize(0),
-        data(new int[size]) {}
-
-    Array(const int count, const int fill) :
-        initialSize(count),
-        size(count),
-        realSize(count),
-        data(new int[count]) {
-            for (int i = 0; i != size; i++) {
-                data[i] = fill;
-            }
-        }
+        data(nullptr) {}
 
 
-    ~Array() {
+    ~Buffer() {
         delete[] data;
     }
 
-    void addElem(const int elem) {
+    void addElem(T elem) {
         if(realSize == size) {
             grow();
         }
         data[realSize++] = elem;
     }
 
-    int deleteLast() {
+    T deleteLast() {
         return data[--realSize];
     }
 
-    int getElem(const int index) {
+    T getElem(const int index) {
         return data[index];
     }
 
-    void setElem(const int index, const int elem) {
+    void setElem(const int index, const T elem) {
         data[index] = elem;
     }
 
@@ -69,23 +60,22 @@ class Array {
         return (realSize == 0);
     }
 
-    void print() {
-        for (int i = 0; i != realSize; i++) {
-            std::cout << data[i] << " ";
-        }
-        std::cout << std::endl;
-    }
-
+    // void print() {
+    //     for (int i = 0; i != realSize; i++) {
+    //         std::cout << data[i] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
  private:
     int initialSize;
     int size;
     int realSize;
-    int * data;
+    T * data;
 
     void grow() {
-        int newSize = size * 2;
-        int * newData = new int[newSize];
+        int newSize = std::max(size * 2, initialSize);
+        T * newData = new T[newSize];
         for (int i = 0; i != realSize; i++) {
             newData[i] = data[i];
         }
@@ -95,123 +85,163 @@ class Array {
     }
 };
 
-class Tree {
-public:
-    Tree();
-    ~Tree();
 
+template <typename T>
+
+class MaxHeap {
+ public:
+    MaxHeap() : arr() {}
+
+    void insert(T elem) {
+        arr.addElem(elem);
+        siftUp(arr.getSize() - 1);
+    }
+
+    T extraxtMax() {
+        assert(!arr.isEmpty());
+        T result = arr.getElem(0);
+        arr.setElem(0, arr.getElem(arr.getSize() - 1));
+        arr.deleteLast();
+        if (!arr.isEmpty()) {
+            siftDown(0);
+        }
+        return result;
+    }
+
+    T getMax() {
+        return arr.getElem(0);
+    }
+
+    void print() {
+        for (int i = 0; i != arr.getSize(); i++) {
+            std::cout << "{"<< arr.getElem(i).index << "," << arr.getElem(i).value << "}, ";
+        }
+        std::cout << std::endl;
+    }
+
+ private:
+    Buffer<T> arr;
+
+    void siftDown(int i) {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        int largest = i;
+        if (left < arr.getSize() && arr.getElem(left).value > arr.getElem(i).value) {
+            largest = left;
+        }
+        if (right < arr.getSize() && arr.getElem(right).value > arr.getElem(largest).value) {
+            largest = right;
+        }
+        if (largest != i) {
+            arr.swap(i, largest);
+            siftDown(largest);
+        }
+    }
+
+    void siftUp (int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (arr.getElem(index).value <= arr.getElem(parent).value) {
+                return;
+            }
+            arr.swap(index, parent);
+            index = parent;
+        }
+    }
+
+    void buildHeap() {
+        for (int i = arr.getSize() / 2 - 1; i >= 0; --i) {
+            siftDown(i);
+        }
+    }
 };
 
-double makePower( double a, int n ) {
-    double result = 1;
-    double aInPowerOf2 = a;
-    while( n > 0 ) {
-        if( ( n & 1 ) == 1 ) {
-            result *= aInPowerOf2;
-        }
-        aInPowerOf2 *= aInPowerOf2;
-        n = n >> 1;
-    }
-    return result;
-}
-
+struct Node {
+    int value;
+    int index;
+    explicit Node() : value(0), index(0)  {}
+};
 
 void run(std::istream & input, std::ostream & output) {
-    int arraySize = 0;
-    input >> arraySize;
-    assert(arraySize >= 0 && arraySize < 100000000);
+    int heapSize = 0;
+    input >> heapSize;
+    assert(heapSize >= 0 && heapSize < 100000000);
 
-    int a = arraySize - 1;
-    int power = 0;
-    while(a != 0) {
-      a = a >> 1;
-      power++;
-    }
-    std::cout << "Old arraySize " << arraySize<< std::endl;
-    std::cout << "Old power " << power << std::endl;
-
-    int newArraySize = makePower(2, power + 1) - 1 ;
-    std::cout << "new size " << newArraySize << std::endl;
-
-    Array array(newArraySize, 0);
-
-    for (int i = 0; i != arraySize; i++) {
-            int elem = 0;
-            input >> elem;
-            array.setElem(newArraySize / 2 + i, elem);
+    Buffer<Node> buf;
+    for (int i = 0; i != heapSize; i++) {
+        Node node;
+        input >> node.value;
+        node.index = i;
+        buf.addElem(node);
     }
 
-    for (int i = newArraySize / 2; i != -1; i--) {
-        array.setElem(i, std::max(array.getElem(2 * i + 1), array.getElem(2 * i + 2)));
+    // for (int i = 0; i != buf.getSize(); i++) {
+    //     std::cout << buf.getElem(i).index << " " << buf.getElem(i).value << std::endl;
+    // }
+
+    int windowSize = 0;
+    input >> windowSize;
+
+    MaxHeap<Node> heap;
+    for (int i = 0; i != windowSize; i++) {
+        heap.insert(buf.getElem(i));
     }
-
-
-
-    int l = 4;
-    int r = 7;
-
-
-    int ans = 0;
-    int n = newArraySize / 2;
-    l += n ;//- 1;
-    r += n ;//- 1;
-    while (l <= r)
-    {
-        std::cout << "l = " << l << "  data[l] = " << array.getElem(l) << std::endl;
-        std::cout << "r = " << r << "  data[r] = " << array.getElem(r) << std::endl;
-        if (l % 1 == 0) {
-            std::cout << "l" << std::endl;
-            ans = std::max(ans, array.getElem(l));
-            std::cout << "ans = " << ans << std::endl;
-            l = l / 2;
-        } else {
-            l = (l - 2) / 2;
-        }
-
-        if (r % 2 != 0) {
-            std::cout << "r " << std::endl;
-            ans = std::max(ans, array.getarray.getElem(r)Elem(r));
-            std::cout << "ans = " << ans << std::endl;
-            std::cout << "ODD "<< r << std::endl;
-            r = (r - 3) / 2;
-        } else {
-            r = (r - 2) / 2;
-            std::cout << "NODD "<< r << std::endl;
-        }
-        // сдвигаем указатели на уровень выше
-    }
-
-    std::cout << "l = " << l << "  data[l] = " << array.getElem(l) << std::endl;
-    std::cout << "r = " << r << "  data[r] = " << array.getElem(r) << std::endl;
-
-    array.print();
-    std::cout << "ans = " << ans << std::endl;
-
-
-
     //heap.print();
+
+
+    int left = 0;
+    int right = windowSize - 1;
+    while (right != heapSize) {
+        Node node = heap.getMax();
+        //heap.print();
+        if (node.index >= left && node.index <= right) {
+            // std::cout << "ZALUPA" << std::endl;
+            // output << "left = " << left << " right = " << right << std::endl;
+            output << node.value << std::endl;
+            right++;
+            left++;
+            heap.insert(buf.getElem(right));
+        } else {
+            // std::cout << "ZALUPA" << std::endl;
+            heap.extraxtMax();
+        }
+    }
+
+    // for (int left = 0, right = windowSize - 1; right != heapSize; left++, right++) {
+    //     heap.print();
+    //     Node node = heap.getMax();
+    //     if (node.index >= left && node.index <= right) {
+    //         output << "left = " << left << " right = " << right << std::endl;
+    //         output << node.value << std::endl;
+    //     } else {
+    //         std::cout << "ZALUPA" << std::endl;
+    //         heap.extraxtMax();
+    //     }
+    //     heap.insert(buf.getElem(right + 1));
+    // }
+
 }
 
 void test() {
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    //     input << "10 ";
-    //     input << "1 2 3 4 5 6 7 8 9 10 ";
-    //     input << "6 ";
+        input << "10 ";
+        input << "10 9 8 7 6 5 4 3 2 1 ";
+        input << "5 ";
 
-    //     run(input, output);
+        run(input, output);
 
-    //     std::cout << output.str() << std::endl;
-    // }
+        std::cout << output.str() << std::endl;
+    }
     {
         std::stringstream input;
         std::stringstream output;
 
         input << "9" << std::endl;
         input << "0 7 3 8 4 5 10 4 6" << std::endl;
-        input << "1" << std::endl;
+        input << "4" << std::endl;
 
         run(input, output);
 
@@ -233,8 +263,9 @@ void test() {
 }
 
 int main(int argc, char const *argv[]) {
-    // run(std::cin, std::cout);
+    //run(std::cin, std::cout);
     test();
+
 
     return 0;
 }

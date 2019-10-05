@@ -23,7 +23,7 @@ class Buffer {
         delete[] data;
     }
 
-    void addElem(int elem) {
+    void addElem(T elem) {
         data[realSize++] = elem;
     }
 
