@@ -23,7 +23,6 @@ class Buffer {
         realSize(0),
         data(nullptr) {}
 
-
     ~Buffer() {
         delete[] data;
     }
@@ -77,8 +76,7 @@ class Buffer {
     }
 };
 
-
-template <typename T, class DefaultComparator = std::less>
+template <typename T>
 class MaxHeap {
  public:
     MaxHeap() : arr() {}
@@ -117,10 +115,10 @@ class MaxHeap {
         int left = 2 * i + 1;
         int right = 2 * i + 2;
         int largest = i;
-        if (left < arr.getSize() && arr.getElem(left).value > arr.getElem(i).value) {
+        if (left < arr.getSize() && arr.getElem(i) < arr.getElem(left)) {
             largest = left;
         }
-        if (right < arr.getSize() && arr.getElem(right).value > arr.getElem(largest).value) {
+        if (right < arr.getSize() && arr.getElem(largest) < arr.getElem(right)) {
             largest = right;
         }
         if (largest != i) {
@@ -132,7 +130,7 @@ class MaxHeap {
     void siftUp (int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
-            if (arr.getElem(index).value <= arr.getElem(parent).value) {
+            if (! (arr.getElem(parent) < arr.getElem(index))) {
                 return;
             }
             arr.swap(index, parent);
@@ -147,27 +145,32 @@ class MaxHeap {
     }
 };
 
+// структура для работы с кучей (реализована передача сравнения снаружи)
 struct Node {
     int value;
     int index;
     explicit Node() : value(0), index(0)  {}
+    constexpr bool operator<(const Node &rhs) const {
+        return value < rhs.value;
+    }
 };
+
 
 int main(int argc, char const *argv[]) {
     int heapSize = 0;
-    input >> heapSize;
+    std::cin >> heapSize;
     assert(heapSize >= 0 && heapSize < 100000000);
 
     Buffer<Node> buf;
     for (int i = 0; i != heapSize; i++) {
         Node node;
-        input >> node.value;
+        std::cin >> node.value;
         node.index = i;
         buf.addElem(node);
     }
 
     int windowSize = 0;
-    input >> windowSize;
+    std::cin >> windowSize;
     assert(windowSize >= 1 && heapSize <= heapSize);
 
     MaxHeap<Node> heap;
@@ -179,7 +182,7 @@ int main(int argc, char const *argv[]) {
     while (right != heapSize) {
         Node node = heap.getMax();
         if (node.index >= left && node.index <= right) {
-            output << node.value << " ";
+            std::cout << node.value << " ";
             left++;
             right++;
             heap.insert(buf.getElem(right));
@@ -187,6 +190,6 @@ int main(int argc, char const *argv[]) {
             heap.extraxtMax();
         }
     }
-    output << std::endl;
+    std::cout << std::endl;
     return 0;
 }
