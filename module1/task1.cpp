@@ -29,17 +29,11 @@ class Buffer {
 
     int deleteElemOnIndex(const int index) {
         int deletedElem = data[index];
-        int * newData = new int[--realSize];
-
-        for (int i = 0; i != index; i++) {
-            newData[i] = data[i];
-        }
-        for (int i = index; i != realSize; i++) {
-            newData[i] = data[i+1];
+        realSize--;
+        for (int i = index; i != realSize ; i++) {
+            data[i] = data[i + 1];
         }
 
-        delete[] data;
-        data = newData;
         return deletedElem;
     }
 
