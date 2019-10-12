@@ -76,10 +76,10 @@ class Buffer {
     }
 };
 
-template <typename T>
+template <typename T, class Comparator = std::less<T>>
 class MaxHeap {
  public:
-    MaxHeap() : arr() {}
+    MaxHeap(Comparator comp = Comparator()) : arr() {}
 
     void insert(T elem) {
         arr.addElem(elem);
@@ -110,15 +110,16 @@ class MaxHeap {
 
  private:
     Buffer<T> arr;
+    Comparator comp;
 
     void siftDown(int i) {
         int left = 2 * i + 1;
         int right = 2 * i + 2;
         int largest = i;
-        if (left < arr.getSize() && arr.getElem(i) < arr.getElem(left)) {
+        if (left < arr.getSize() && comp(arr.getElem(i), arr.getElem(left))) {
             largest = left;
         }
-        if (right < arr.getSize() && arr.getElem(largest) < arr.getElem(right)) {
+        if (right < arr.getSize() && comp(arr.getElem(largest), arr.getElem(right))) {
             largest = right;
         }
         if (largest != i) {
@@ -130,7 +131,8 @@ class MaxHeap {
     void siftUp (int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
-            if (! (arr.getElem(parent) < arr.getElem(index))) {
+            // if (! (arr.getElem(parent) < arr.getElem(index))) {
+            if (! comp(arr.getElem(parent), arr.getElem(index))) {
                 return;
             }
             arr.swap(index, parent);
@@ -145,16 +147,19 @@ class MaxHeap {
     }
 };
 
-// структура для работы с кучей (реализована передача сравнения снаружи)
 struct Node {
     int value;
     int index;
     explicit Node() : value(0), index(0)  {}
-    constexpr bool operator<(const Node &rhs) const {
-        return value < rhs.value;
-    }
 };
 
+template <class T>
+class Comparator {
+public:
+    bool operator() (const T & l, const T & r) {
+        return l.value < r.value;
+    }
+};
 
 int main(int argc, char const *argv[]) {
     int heapSize = 0;
@@ -173,7 +178,7 @@ int main(int argc, char const *argv[]) {
     std::cin >> windowSize;
     assert(windowSize >= 1 && heapSize <= heapSize);
 
-    MaxHeap<Node> heap;
+    MaxHeap<Node, Comparator<Node>> heap;
     for (int i = 0; i != windowSize; i++) {
         heap.insert(buf.getElem(i));
     }
