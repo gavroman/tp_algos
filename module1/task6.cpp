@@ -86,8 +86,6 @@ template<class T, class Comparator = std::less<T>>
 int middleOfThree(Buffer<T> * array, int left, int right, Comparator comp = Comparator()) {
     int mid = (right + left) / 2;
     right--;
-
-    // if (array->getElem(right) < array->getElem(left)) {
     if (comp(array->getElem(right), array->getElem(left))) {
         if (!comp(array->getElem(mid), array->getElem(left))) {
             mid = left;
@@ -149,74 +147,22 @@ void kStatistics(Buffer<T> * arr, int size, int k, Comparator comp = Comparator(
     }
 }
 
-void run(std::istream & input, std::ostream & output) {
+int main(int argc, char const *argv[]) {
     int arrSize = 0;
-    input >> arrSize;
+    std::cin >> arrSize;
     assert(arrSize >= 0 && arrSize < 100000000);
 
     int k = 0;
-    input >> k;
+    std::cin >> k;
 
     Buffer<int> array(arrSize);
     for (int i = 0; i != arrSize; i++) {
         int elem = 0;
-        input >> elem;
+        std::cin >> elem;
         array.addElem(elem);
     }
 
     kStatistics(&array, array.getSize(), k);
     std::cout << array.getElem(k) << std::endl;
-}
-
-void test() {
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "10 0" << std::endl;
-        input << "3 6 5 7 2 9 8 10 4 1" << std::endl;
-
-        run(input, output);
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "10 8" << std::endl;
-        input << "10 9 8 7 6 5 4 3 2 1 " << std::endl;
-
-        run(input, output);
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "10 3" << std::endl;
-        input << "0 0 0 0 0 0 0 0 0 0 " << std::endl;
-
-        run(input, output);
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "9 7" << std::endl;
-        input << "0 7 3 8 4 5 10 4 6" << std::endl;
-
-        run(input, output);
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "4 0" << std::endl;
-        input << "5 10 4 6 " << std::endl;
-
-        run(input, output);
-    }
-}
-
-int main(int argc, char const *argv[]) {
-    test();
     return 0;
 }
