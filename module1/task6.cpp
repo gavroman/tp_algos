@@ -106,12 +106,9 @@ int middleOfThree(Buffer<T> * array, int left, int right, Comparator comp = Comp
 
 template<class T, class Comparator = std::less<T>>
 int partition(Buffer<T> * arr, int left, int right, Comparator comp = Comparator()) {
-
-std::cout << "Left = " << left << std::endl;
-std::cout << "right = " << right << std::endl;
     int pivotIdx = middleOfThree(arr, left, right, comp);
-    std::cout << "PIVOT = " << arr->getElem(pivotIdx) << std::endl;
     arr->swap(pivotIdx, right - 1);
+
     int i = left;
     int j = left;
     int last = right - 1;
@@ -121,17 +118,10 @@ std::cout << "right = " << right << std::endl;
             i++;
         }
         for (j = i; j != right && arr->getElem(j) >= pivot; j++);
-        // j = i;
-        // while (j != last && arr->getElem(j) >= pivot) {
-        //     j++;
-        // }
         if (j != right) {
             arr->swap(j, i);
             i++;
         }
-        std::cout << "i =  " << i<< std::endl;
-        std::cout << "j =  " << j<< std::endl;
-        arr->print();
     }
     arr->swap(i, last);
     return i;
@@ -167,48 +157,38 @@ void run(std::istream & input, std::ostream & output) {
         array.addElem(elem);
     }
 
-    array.print();
     kStatistics(&array, array.getSize(), k);
-    // partition(&array, 0, arrSize);
-    array.print();
-    std::cout << "K = " << k << "  elem = " << array.getElem(k) << std::endl;
-    // std::cout << middleOfThree(&array, 0, arrSize) << std::endl;
+    std::cout << array.getElem(k) << std::endl;
 }
 
 void test() {
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    //     input << "10 0" << std::endl;
-    //     input << "3 6 5 7 2 9 8 10 4 1" << std::endl;
+        input << "10 0" << std::endl;
+        input << "3 6 5 7 2 9 8 10 4 1" << std::endl;
 
-    //     run(input, output);
+        run(input, output);
+    }
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    //     std::cout << output.str() << std::endl;
-    // }
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
+        input << "10 8" << std::endl;
+        input << "10 9 8 7 6 5 4 3 2 1 " << std::endl;
 
-    //     input << "10 8" << std::endl;
-    //     input << "10 9 8 7 6 5 4 3 2 1 " << std::endl;
+        run(input, output);
+    }
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    //     run(input, output);
+        input << "10 3" << std::endl;
+        input << "0 0 0 0 0 0 0 0 0 1 " << std::endl;
 
-    //     std::cout << output.str() << std::endl;
-    // }
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
-
-    //     input << "10 3" << std::endl;
-    //     input << "0 0 0 0 0 0 0 0 0 1 " << std::endl;
-
-    //     run(input, output);
-
-    //     std::cout << output.str() << std::endl;
-    // }
+        run(input, output);
+    }
     {
         std::stringstream input;
         std::stringstream output;
@@ -217,26 +197,34 @@ void test() {
         input << "0 7 3 8 4 5 10 4 6" << std::endl;
 
         run(input, output);
-
-        std::cout << output.str() << std::endl;
     }
-    // {
-    //     std::stringstream input;
-    //     std::stringstream output;
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    //     input << "4 4" << std::endl;
-    //     input << "5 10 4 6 " << std::endl;
+        input << "4 0" << std::endl;
+        input << "5 10 4 6 " << std::endl;
 
-    //     run(input, output);
-
-    //     std::cout << output.str() << std::endl;
-    // }
-
-
+        run(input, output);
+    }
 }
 
 int main(int argc, char const *argv[]) {
-    test();
-    //run(std::cin, std::cout);
+    int arrSize = 0;
+    std::cin >> arrSize;
+    assert(arrSize >= 0 && arrSize < 100000000);
+
+    int k = 0;
+    std::cin >> k;
+
+    Buffer<int> array(arrSize);
+    for (int i = 0; i != arrSize; i++) {
+        int elem = 0;
+        std::cin >> elem;
+        array.addElem(elem);
+    }
+
+    kStatistics(&array, array.getSize(), k);
+    std::cout << array.getElem(k) << std::endl;
     return 0;
 }
