@@ -87,16 +87,17 @@ int middleOfThree(Buffer<T> * array, int left, int right, Comparator comp = Comp
     int mid = (right + left) / 2;
     right--;
 
-    if (array->getElem(right) < array->getElem(left)) {
-        if (array->getElem(mid) >= array->getElem(left)) {
+    // if (array->getElem(right) < array->getElem(left)) {
+    if (comp(array->getElem(right), array->getElem(left))) {
+        if (!comp(array->getElem(mid), array->getElem(left))) {
             mid = left;
-        } else if (array->getElem(mid) < array->getElem(right)) {  // left > all
+        } else if (comp(array->getElem(mid), array->getElem(right))) {  // left > all
             mid = right;
         }
     } else {  // left <= right
-        if (array->getElem(left) >= array->getElem(mid)) {
+        if (!comp(array->getElem(left), array->getElem(mid))) {
             mid = left;
-        } else if (array->getElem(right) < array->getElem(mid)) {
+        } else if (comp(array->getElem(right), array->getElem(mid))) {
             mid = right;
         }
     }
@@ -113,27 +114,33 @@ int partition(Buffer<T> * arr, int left, int right, Comparator comp = Comparator
     int j = left;
     int last = right - 1;
     T pivot = arr->getElem(last);
-    while (j != right) {
-        while (arr->getElem(i) < pivot) {
+    while (j != last) {
+        while (comp(arr->getElem(i), pivot)) {
             i++;
+            j++;
         }
-        for (j = i; j != right && arr->getElem(j) >= pivot; j++);
-        if (j != right) {
+        while (j < last && !comp(arr->getElem(j), pivot)) {
+            j++;
+        }
+        if (j != last) {
             arr->swap(j, i);
             i++;
+            j++;
         }
     }
     arr->swap(i, last);
     return i;
 }
 
+
 template<class T, class Comparator = std::less<T>>
 void kStatistics(Buffer<T> * arr, int size, int k, Comparator comp = Comparator()) {
     int left = 0;
     int right = size;
 
-    while (left < right) {
-        int m = partition(arr, left, right, comp);
+    int m = -1;
+    while (m != k) {
+        m = partition(arr, left, right, comp);
         if (m < k) {
             left = m + 1;
         } else {
@@ -185,7 +192,7 @@ void test() {
         std::stringstream output;
 
         input << "10 3" << std::endl;
-        input << "0 0 0 0 0 0 0 0 0 1 " << std::endl;
+        input << "0 0 0 0 0 0 0 0 0 0 " << std::endl;
 
         run(input, output);
     }
@@ -210,21 +217,6 @@ void test() {
 }
 
 int main(int argc, char const *argv[]) {
-    int arrSize = 0;
-    std::cin >> arrSize;
-    assert(arrSize >= 0 && arrSize < 100000000);
-
-    int k = 0;
-    std::cin >> k;
-
-    Buffer<int> array(arrSize);
-    for (int i = 0; i != arrSize; i++) {
-        int elem = 0;
-        std::cin >> elem;
-        array.addElem(elem);
-    }
-
-    kStatistics(&array, array.getSize(), k);
-    std::cout << array.getElem(k) << std::endl;
+    test();
     return 0;
 }
