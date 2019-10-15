@@ -16,16 +16,29 @@
 #include <sstream>
 #include <iostream>
 #include <assert.h>
+#include <string.h>
+#include <algorithm>
 
 template <class T>
 class Buffer {
 
  public:
     Buffer(int initSize) :
-    initialSize(initSize),
-    size(0),
-    realSize(0),
-    data(nullptr) {}
+        initialSize(initSize),
+        size(0),
+        realSize(0),
+        data(nullptr) {}
+
+    // Buffer(Buffer const& copy) :
+    //     initialSize(copy.initialSize),
+    //     size(copy.size),
+    //     realSize(copy.realSize) {
+
+    //     std::cout << "ZALUPA copy" << std::endl;
+    //     for (int i = 0; i != realSize; i++) {
+    //         data[i] = copy.data[i];
+    //     }
+    // }
 
     ~Buffer() {
         delete[] data;
@@ -90,28 +103,202 @@ class Buffer {
 struct TimeSlot {
     int timeIn;
     int timeOut;
-    explicit Node() : timeIn(0), timeOut(0)  {}
+    explicit TimeSlot() : timeIn(0), timeOut(0)  {}
 };
 
+template <class T>
+class timeComparator {
+public:
+    bool operator() (const T & left, const T & right) {
+        if (left.timeOut < right.timeOut) {
+            return true;
+        }
+        if (left.timeOut > right.timeOut) {
+            return false;
+        }
+
+        if (left.timeIn < right.timeIn) {
+            return false;
+        }
+        if (left.timeIn > right.timeIn) {
+            return true;
+        }
+        return true;
+    }
+};
+
+template<class T, class Comparator = timeComparator<T>>
+Buffer<T> * merge(Buffer<T> * leftArray, Buffer<T> * rightArray, Comparator comp = Comparator()) {
+    // std::cout << "_________________________________________" << std::endl;
+    // std::cout << "leftArray = ";
+    // leftArray->print();
+    // std::cout << "rightArray = ";
+    // rightArray->print();
+    Buffer<T> * returnArray = new Buffer<T>(leftArray->getSize() + rightArray->getSize());
+    int i = 0;
+    int j = 0;
+    while (i != leftArray->getSize() && j != rightArray->getSize()) {
+        // std::cout << "i = " << i << std::endl;
+        // std::cout << "j = " << j << std::endl;
+        if (comp(leftArray->getElem(i), rightArray->getElem(j))) {
+            returnArray->addElem(leftArray->getElem(i));
+            i++;
+        } else {
+            returnArray->addElem(rightArray->getElem(j));
+            j++;
+        }
+    }
+
+    if (i == leftArray->getSize()) {
+        for (; j != rightArray->getSize(); j++) {
+            returnArray->addElem(rightArray->getElem(j));
+        }
+    } else if (j == rightArray->getSize()) {
+        for (; i != leftArray->getSize(); i++) {
+            returnArray->addElem(leftArray->getElem(i));
+        }
+    }
+    // std::cout << "returnArray = ";
+    // returnArray->print();
+    // std::cout << "_________________________________________" << std::endl;
+    return returnArray;
+}
+
+template<class T>
+void mergeSort(Buffer<T> * array) {
+    if (array->getSize() == 1) {
+        return;
+    }
+
+    int leftPartSize = array->getSize() / 2;
+    Buffer<T> * leftArray = new Buffer<T>(leftPartSize);
+    for (int i = 0; i != leftPartSize; i++) {
+        leftArray->addElem(array->getElem(i));
+    }
+    int rightPartSize = array->getSize() - leftPartSize;
+    Buffer<T> * rightArray = new Buffer<T>(rightPartSize);
+    for (int i = leftPartSize; i != array->getSize(); i++) {
+        rightArray->addElem(array->getElem(i));
+    }
+
+    mergeSort(leftArray);
+    mergeSort(rightArray);
+
+    Buffer<T> * tmpArray = merge(leftArray, rightArray);
+    for (int i = 0; i != array->getSize(); i++) {
+        array->setElem(i, tmpArray->getElem(i));
+    }
+
+    delete tmpArray;
+    delete rightArray;
+    delete leftArray;
+    // array->print();
+}
 
 int run(std::istream& input, std::ostream& output) {
     int arraySize = 0;
-    input >>
+    input >> arraySize;
+
+    // Buffer<int> array = Buffer<int>(arraySize);
+    // for (int i = 0; i != arraySize; i++) {
+    //     int elem = 0;
+    //     input >> elem;
+    //     array.addElem(elem);
+    // }
+
+    Buffer<TimeSlot> array(arraySize);
+    for (int i = 0; i != arraySize; i++) {
+        TimeSlot tSlot;
+        input >> tSlot.timeIn >> tSlot.timeOut;
+        array.addElem(tSlot);
+    }
+
+    for (int i = 0; i != array.getSize(); i++) {
+        std::cout << "{" << array.getElem(i).timeIn << "," << array.getElem(i).timeOut << "}, ";
+    }
+    std::cout << std::endl << std::endl;
+
+    mergeSort(&array);
+
+    for (int i = 0; i != array.getSize(); i++) {
+        std::cout << "{" << array.getElem(i).timeIn << "," << array.getElem(i).timeOut << "}, ";
+    }
+    std::cout << std::endl;
+
+    int advertismentCounter = 2;
+    TimeSlot base = array.getElem(0);
+    bool afterBase = false;
+    for (int i = 1; i != array.getSize(); i++) {
+        int timeIn = array.getElem(i).timeIn;
+        if (timeIn > base.timeOut) {
+            std::cout << i << " " << advertismentCounter << std::endl;
+            advertismentCounter += 2;
+            base = array.getElem(i);
+        } else if (timeIn == base.timeOut) {
+            std::cout << i << " " << advertismentCounter << std::endl;
+            advertismentCounter++;
+            base = array.getElem(i);
+            afterBase = true;
+        } else if (afterBase && timeIn > base.timeIn) {
+            std::cout << i << " " << advertismentCounter << std::endl;
+            advertismentCounter++;
+            afterBase = false;
+        }
+    }
+    std::cout << std::endl << advertismentCounter << std::endl;
 }
 
 void test() {
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    std::stringstream input;
-    std::stringstream output;
+        input << "5" << std::endl;
+        input << "1 10" << std::endl;
+        input << "10 12" << std::endl;
+        input << "1 10" << std::endl;
+        input << "1 10" << std::endl;
+        input << "23 24" << std::endl;
 
-    input << "5" << std::endl;
-    input << "1 10" << std::endl;
-    input << "10 12" << std::endl;
-    input << "1 10" << std::endl;
-    input << "1 10" << std::endl;
-    input << "23 24" << std::endl;
+        run(input, output);
+    }
+    {
+        std::stringstream input;
+        std::stringstream output;
 
-    run(input, output);
+        input << "9" << std::endl;
+        input << "3 5" << std::endl;
+        input << "4 8" << std::endl;
+        input << "1 19" << std::endl;
+        input << "13 14" << std::endl;
+        input << "1 8" << std::endl;
+        input << "5 16" << std::endl;
+        input << "3 10" << std::endl;
+        input << "4 10" << std::endl;
+        input << "5 10" << std::endl;
+
+
+        run(input, output);
+    }
+    /*{
+        std::stringstream input;
+        std::stringstream output;
+
+        input << "8" << std::endl;
+        input << "1 6 4 3 2 5 7 0" << std::endl;
+
+        run(input, output);
+    }*/
+    /*{
+        std::stringstream input;
+        std::stringstream output;
+
+        input << "16" << std::endl;
+        input << "1 3 5 7 9 11 13 15" << std::endl;
+        input << "2 4 6 8 10 12 14 16" << std::endl;
+
+        run(input, output);
+    }*/
 }
 
 int main(int argc, char const *argv[]) {
