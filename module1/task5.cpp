@@ -213,10 +213,10 @@ int run(std::istream& input, std::ostream& output) {
         array.addElem(tSlot);
     }
 
-    for (int i = 0; i != array.getSize(); i++) {
-        std::cout << "{" << array.getElem(i).timeIn << "," << array.getElem(i).timeOut << "}, ";
-    }
-    std::cout << std::endl << std::endl;
+    // for (int i = 0; i != array.getSize(); i++) {
+    //     std::cout << "{" << array.getElem(i).timeIn << "," << array.getElem(i).timeOut << "}, ";
+    // }
+    // std::cout << std::endl << std::endl;
 
     mergeSort(&array);
 
@@ -225,27 +225,54 @@ int run(std::istream& input, std::ostream& output) {
     }
     std::cout << std::endl;
 
+    // int advertismentCounter = 2;
+    // TimeSlot base = array.getElem(0);
+    // bool afterBase = false;
+    // for (int i = 1; i != array.getSize(); i++) {
+    //     int timeIn = array.getElem(i).timeIn;
+    //     if (timeIn > base.timeOut) {
+    //         std::cout << i << " " << advertismentCounter << std::endl;
+    //         advertismentCounter += 2;
+    //         base = array.getElem(i);
+    //     } else if (timeIn == base.timeOut) {
+    //         std::cout << i << " " << advertismentCounter << std::endl;
+    //         advertismentCounter++;
+    //         base = array.getElem(i);
+    //         afterBase = true;
+    //     } else if (afterBase && timeIn > base.timeIn) {
+    //         std::cout << i << " " << advertismentCounter << std::endl;
+    //         advertismentCounter++;
+    //         afterBase = false;
+    //     }
+    // }
+    // std::cout << std::endl << advertismentCounter << std::endl;
+
+    int advTime1 = array.getElem(0).timeOut - 1;
+    int advTime2 = array.getElem(0).timeOut;
     int advertismentCounter = 2;
-    TimeSlot base = array.getElem(0);
-    bool afterBase = false;
-    for (int i = 1; i != array.getSize(); i++) {
-        int timeIn = array.getElem(i).timeIn;
-        if (timeIn > base.timeOut) {
-            std::cout << i << " " << advertismentCounter << std::endl;
+    for (int i = 1; i != array.getSize() ; i++) {
+        TimeSlot current = array.getElem(i);
+
+        if (current.timeIn > advTime2) {
             advertismentCounter += 2;
-            base = array.getElem(i);
-        } else if (timeIn == base.timeOut) {
-            std::cout << i << " " << advertismentCounter << std::endl;
+            advTime1 = array.getElem(i).timeOut - 1;
+            advTime2 = array.getElem(i).timeOut;
+        } else if (current.timeIn == advTime2) {
             advertismentCounter++;
-            base = array.getElem(i);
-            afterBase = true;
-        } else if (afterBase && timeIn > base.timeIn) {
-            std::cout << i << " " << advertismentCounter << std::endl;
+            advTime1 = advTime2;
+            advTime2 = array.getElem(i).timeOut;
+        } else if (current.timeIn > advTime1) {
             advertismentCounter++;
-            afterBase = false;
+            advTime1 = advTime2;
+            advTime2 = current.timeOut;
         }
+
+        // std::cout << "Time 1 = " << advTime1<< std::endl;
+        // std::cout << "Time 2 = " << advTime2<< std::endl;
+        // std::cout << "Counter = " <<advertismentCounter << std::endl;
+        // std::cout << "_________________________________________" << std::endl;
     }
-    std::cout << std::endl << advertismentCounter << std::endl;
+    std::cout << advertismentCounter << std::endl;
 }
 
 void test() {
@@ -277,6 +304,18 @@ void test() {
         input << "4 10" << std::endl;
         input << "5 10" << std::endl;
 
+        run(input, output);
+    }
+    {
+        std::stringstream input;
+        std::stringstream output;
+
+        input << "5" << std::endl;
+        input << "1 4" << std::endl;
+        input << "2 5" << std::endl;
+        input << "3 6" << std::endl;
+        input << "4 7" << std::endl;
+        input << "5 8" << std::endl;
 
         run(input, output);
     }
