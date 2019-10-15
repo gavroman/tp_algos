@@ -16,8 +16,6 @@
 #include <sstream>
 #include <iostream>
 #include <assert.h>
-#include <string.h>
-#include <algorithm>
 
 template <class T>
 class Buffer {
@@ -28,17 +26,6 @@ class Buffer {
         size(0),
         realSize(0),
         data(nullptr) {}
-
-    // Buffer(Buffer const& copy) :
-    //     initialSize(copy.initialSize),
-    //     size(copy.size),
-    //     realSize(copy.realSize) {
-
-    //     std::cout << "ZALUPA copy" << std::endl;
-    //     for (int i = 0; i != realSize; i++) {
-    //         data[i] = copy.data[i];
-    //     }
-    // }
 
     ~Buffer() {
         delete[] data;
@@ -108,7 +95,7 @@ struct TimeSlot {
 
 template <class T>
 class timeComparator {
-public:
+ public:
     bool operator() (const T & left, const T & right) {
         if (left.timeOut < right.timeOut) {
             return true;
@@ -129,39 +116,28 @@ public:
 
 template<class T, class Comparator = timeComparator<T>>
 Buffer<T> * merge(Buffer<T> * leftArray, Buffer<T> * rightArray, Comparator comp = Comparator()) {
-    // std::cout << "_________________________________________" << std::endl;
-    // std::cout << "leftArray = ";
-    // leftArray->print();
-    // std::cout << "rightArray = ";
-    // rightArray->print();
-    Buffer<T> * returnArray = new Buffer<T>(leftArray->getSize() + rightArray->getSize());
+    Buffer<T> * resultArray = new Buffer<T>(leftArray->getSize() + rightArray->getSize());
     int i = 0;
     int j = 0;
     while (i != leftArray->getSize() && j != rightArray->getSize()) {
-        // std::cout << "i = " << i << std::endl;
-        // std::cout << "j = " << j << std::endl;
         if (comp(leftArray->getElem(i), rightArray->getElem(j))) {
-            returnArray->addElem(leftArray->getElem(i));
+            resultArray->addElem(leftArray->getElem(i));
             i++;
         } else {
-            returnArray->addElem(rightArray->getElem(j));
+            resultArray->addElem(rightArray->getElem(j));
             j++;
         }
     }
-
     if (i == leftArray->getSize()) {
         for (; j != rightArray->getSize(); j++) {
-            returnArray->addElem(rightArray->getElem(j));
+            resultArray->addElem(rightArray->getElem(j));
         }
     } else if (j == rightArray->getSize()) {
         for (; i != leftArray->getSize(); i++) {
-            returnArray->addElem(leftArray->getElem(i));
+            resultArray->addElem(leftArray->getElem(i));
         }
     }
-    // std::cout << "returnArray = ";
-    // returnArray->print();
-    // std::cout << "_________________________________________" << std::endl;
-    return returnArray;
+    return resultArray;
 }
 
 template<class T>
@@ -192,67 +168,26 @@ void mergeSort(Buffer<T> * array) {
     delete tmpArray;
     delete rightArray;
     delete leftArray;
-    // array->print();
 }
 
-int run(std::istream& input, std::ostream& output) {
+int main(int argc, char const *argv[]) {
     int arraySize = 0;
-    input >> arraySize;
-
-    // Buffer<int> array = Buffer<int>(arraySize);
-    // for (int i = 0; i != arraySize; i++) {
-    //     int elem = 0;
-    //     input >> elem;
-    //     array.addElem(elem);
-    // }
-
+    std::cin >> arraySize;
     Buffer<TimeSlot> array(arraySize);
+
     for (int i = 0; i != arraySize; i++) {
         TimeSlot tSlot;
-        input >> tSlot.timeIn >> tSlot.timeOut;
+        std::cin >> tSlot.timeIn >> tSlot.timeOut;
         array.addElem(tSlot);
     }
 
-    // for (int i = 0; i != array.getSize(); i++) {
-    //     std::cout << "{" << array.getElem(i).timeIn << "," << array.getElem(i).timeOut << "}, ";
-    // }
-    // std::cout << std::endl << std::endl;
-
     mergeSort(&array);
-
-    for (int i = 0; i != array.getSize(); i++) {
-        std::cout << "{" << array.getElem(i).timeIn << "," << array.getElem(i).timeOut << "}, ";
-    }
-    std::cout << std::endl;
-
-    // int advertismentCounter = 2;
-    // TimeSlot base = array.getElem(0);
-    // bool afterBase = false;
-    // for (int i = 1; i != array.getSize(); i++) {
-    //     int timeIn = array.getElem(i).timeIn;
-    //     if (timeIn > base.timeOut) {
-    //         std::cout << i << " " << advertismentCounter << std::endl;
-    //         advertismentCounter += 2;
-    //         base = array.getElem(i);
-    //     } else if (timeIn == base.timeOut) {
-    //         std::cout << i << " " << advertismentCounter << std::endl;
-    //         advertismentCounter++;
-    //         base = array.getElem(i);
-    //         afterBase = true;
-    //     } else if (afterBase && timeIn > base.timeIn) {
-    //         std::cout << i << " " << advertismentCounter << std::endl;
-    //         advertismentCounter++;
-    //         afterBase = false;
-    //     }
-    // }
-    // std::cout << std::endl << advertismentCounter << std::endl;
 
     int advTime1 = array.getElem(0).timeOut - 1;
     int advTime2 = array.getElem(0).timeOut;
     int advertismentCounter = 2;
     for (int i = 1; i != array.getSize() ; i++) {
         TimeSlot current = array.getElem(i);
-
         if (current.timeIn > advTime2) {
             advertismentCounter += 2;
             advTime1 = array.getElem(i).timeOut - 1;
@@ -266,81 +201,7 @@ int run(std::istream& input, std::ostream& output) {
             advTime1 = advTime2;
             advTime2 = current.timeOut;
         }
-
-        // std::cout << "Time 1 = " << advTime1<< std::endl;
-        // std::cout << "Time 2 = " << advTime2<< std::endl;
-        // std::cout << "Counter = " <<advertismentCounter << std::endl;
-        // std::cout << "_________________________________________" << std::endl;
     }
     std::cout << advertismentCounter << std::endl;
-}
-
-void test() {
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "5" << std::endl;
-        input << "1 10" << std::endl;
-        input << "10 12" << std::endl;
-        input << "1 10" << std::endl;
-        input << "1 10" << std::endl;
-        input << "23 24" << std::endl;
-
-        run(input, output);
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "9" << std::endl;
-        input << "3 5" << std::endl;
-        input << "4 8" << std::endl;
-        input << "1 19" << std::endl;
-        input << "13 14" << std::endl;
-        input << "1 8" << std::endl;
-        input << "5 16" << std::endl;
-        input << "3 10" << std::endl;
-        input << "4 10" << std::endl;
-        input << "5 10" << std::endl;
-
-        run(input, output);
-    }
-    {
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "5" << std::endl;
-        input << "1 4" << std::endl;
-        input << "2 5" << std::endl;
-        input << "3 6" << std::endl;
-        input << "4 7" << std::endl;
-        input << "5 8" << std::endl;
-
-        run(input, output);
-    }
-    /*{
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "8" << std::endl;
-        input << "1 6 4 3 2 5 7 0" << std::endl;
-
-        run(input, output);
-    }*/
-    /*{
-        std::stringstream input;
-        std::stringstream output;
-
-        input << "16" << std::endl;
-        input << "1 3 5 7 9 11 13 15" << std::endl;
-        input << "2 4 6 8 10 12 14 16" << std::endl;
-
-        run(input, output);
-    }*/
-}
-
-int main(int argc, char const *argv[]) {
-    test();
     return 0;
 }
