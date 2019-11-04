@@ -140,8 +140,8 @@ private:
 };
 
 struct Hasher {
-    int operator()(const std::string& key) const {
-        int hash = 0;
+    long long unsigned int operator()(const std::string& key) const {
+        long long unsigned int hash = 0;
         for (int i = 0; i < key.length(); i++)
             hash = hash * 7 + key[i];
         return hash;
@@ -149,16 +149,15 @@ struct Hasher {
 };
 
 struct HasherProbe {
-    int operator()(const std::string& key) const {
-        int hash = 0;
+    long long unsigned int operator()(const std::string& key) const {
+        long long unsigned int hash = 0;
         for (int i = 0; i < key.length(); i++)
-            hash = hash * 5 + key[i];
+            hash = hash * 13 + key[i];
         return hash * 2 + 1;
     }
 };
 
-
-void run(std::istream & input) {
+int main(int argc, char const *argv[]) {
     Hasher h1;
     HasherProbe h2;
 
@@ -168,7 +167,7 @@ void run(std::istream & input) {
 
     char operation = 0;
     std::string key;
-    while (input >> operation >> key) {
+    while (std::cin >> operation >> key) {
         if (operation == '+') {
             std::cout << (table.add(key) ? "OK" : "FAIL") << std::endl;
         }
@@ -176,103 +175,8 @@ void run(std::istream & input) {
             std::cout << (table.has(key) ? "OK" : "FAIL") << std::endl;
         }
         if (operation == '-') {
-            std::cout << (table.remove(key) ? "OK " : "FAIL ") << key << std::endl;
-        }
-        if (operation == 'p') {
-            table.print();
+            std::cout << (table.remove(key) ? "OK" : "FAIL") << std::endl;
         }
     }
-}
-
-void test() {
-    {
-        std::stringstream input;
-
-        input << "+ 1" << std::endl;
-        input << "+ 2" << std::endl;
-        input << "+ 3" << std::endl;
-        input << "+ 4" << std::endl;
-        input << "+ 5" << std::endl;
-        input << "+ 6" << std::endl;
-        input << "+ 7" << std::endl;
-        input << "+ 8" << std::endl;
-        input << "+ 9" << std::endl;
-        input << "+ qwer" << std::endl;
-        input << "+ fsedgg1" << std::endl;
-        input << "+ fsedgg2" << std::endl;
-        input << "+ fsedgg3" << std::endl;
-        input << "+ fsedgg4" << std::endl;
-        input << "+ fsedgg5" << std::endl;
-        input << "+ fsedgg6" << std::endl;
-        input << "+ fsedgg7" << std::endl;
-        input << "+ fsedgg8" << std::endl;
-        input << "+ fsg9" << std::endl;
-        input << "+ 1ofr" << std::endl;
-        input << "+ 2ofr" << std::endl;
-        input << "+ 3ofr" << std::endl;
-        input << "+ 4ofr" << std::endl;
-        input << "+ 5ofr" << std::endl;
-        input << "+ 6ofr" << std::endl;
-        input << "+ 7ofr" << std::endl;
-        input << "+ 8ofr" << std::endl;
-        input << "+ 9ofr" << std::endl;
-        input << "+ qw" << std::endl;
-        input << "+ fsgg1" << std::endl;
-        input << "+ fsgg2" << std::endl;
-        input << "+ fsgg3" << std::endl;
-        input << "+ fsgg4" << std::endl;
-        input << "+ fsgg5" << std::endl;
-        input << "+ fsgg6" << std::endl;
-        input << "+ fsgg7" << std::endl;
-        input << "+ fsgg8" << std::endl;
-        input << "+ fg9" << std::endl;
-        input << "p d" << std::endl;
-        input << "? 7" << std::endl;
-
-        input << "- 1" << std::endl;
-        input << "- 2" << std::endl;
-        input << "- 3" << std::endl;
-        input << "- 4" << std::endl;
-        input << "- 5" << std::endl;
-        input << "- 6" << std::endl;
-        input << "- 7" << std::endl;
-        input << "- 8" << std::endl;
-        input << "- 9" << std::endl;
-        input << "- qwer" << std::endl;
-        input << "- fsedgg1" << std::endl;
-        input << "- fsedgg2" << std::endl;
-        input << "- fsedgg3" << std::endl;
-        input << "- fsedgg4" << std::endl;
-        input << "- fsedgg5" << std::endl;
-        input << "- fsedgg6" << std::endl;
-        input << "- fsedgg7" << std::endl;
-        input << "- fsedgg8" << std::endl;
-        input << "- fsg9" << std::endl;
-        input << "- 1ofr" << std::endl;
-        input << "- 2ofr" << std::endl;
-        input << "- 3ofr" << std::endl;
-        input << "- 4ofr" << std::endl;
-        input << "- 5ofr" << std::endl;
-        input << "- 6ofr" << std::endl;
-        input << "- 7ofr" << std::endl;
-        input << "- 8ofr" << std::endl;
-        input << "- 9ofr" << std::endl;
-        input << "- qw" << std::endl;
-        input << "- fsgg1" << std::endl;
-        input << "- fsgg2" << std::endl;
-        input << "- fsgg3" << std::endl;
-        input << "- fsgg4" << std::endl;
-        input << "- fsgg5" << std::endl;
-        input << "- fsgg6" << std::endl;
-        input << "- fsgg7" << std::endl;
-        input << "- fsgg8" << std::endl;
-        input << "- fg9" << std::endl;
-        input << "p d" << std::endl;
-        run(input);
-    }
-}
-
-int main(int argc, char const *argv[]) {
-    test();
     return 0;
 }
