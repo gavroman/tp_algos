@@ -37,19 +37,15 @@ class BinaryTree {
         while (true) {
             if (!comp(currentNode->data, data)) {
                 if (currentNode->left) {
-                    // std::cout << "Go left" << std::endl;
                     currentNode = currentNode->left;
                 } else {
-                    // std::cout << "left" << std::endl;
                     currentNode->left = new Node(data);
                     break;
                 }
             } else {
                 if (currentNode->right) {
-                    // std::cout << "Go right" << std::endl;
                     currentNode = currentNode->right;
                 } else {
-                    // std::cout << "Right" << std::endl;
                     currentNode->right = new Node(data);
                     break;
                 }
@@ -66,7 +62,6 @@ class BinaryTree {
         std::cout << std::endl;
     }
 
-
     ~BinaryTree() {
         levelOrder([](Node * node) {
             delete node;
@@ -81,13 +76,7 @@ class BinaryTree {
     void levelOrder(std::function<void(Node*)> visitor) {
         std::queue<Node *> queue;
         Node * currentNode = bigFather;
-        queue.push(bigFather);                // 1
-        // queue.push(bigFather->right);         // 2
-        // std::cout << queue.front()->data << std::endl;  // 1
-        // std::cout << queue.back()->data << std::endl;   // 2
-        // queue.pop();
-        // std::cout << queue.front()->data << std::endl;  // 2
-        // std::cout << queue.back()->data << std::endl;   // 2
+        queue.push(bigFather);
         size_t needToPopNumber = 0;
         size_t newNeedToPopNumber = 1;
         while (!queue.empty()) {
