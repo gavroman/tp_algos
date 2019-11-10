@@ -10,7 +10,6 @@
 #include <sstream>
 #include <iostream>
 #include <assert.h>
-#include <vector>
 #include <queue>
 #include <functional>
 
@@ -29,7 +28,6 @@ class BinaryTree {
     void addElem(const T& data) {
         if (bigFather == nullptr) {
             bigFather = new Node(data);
-
             realSize++;
             return;
         }
@@ -57,7 +55,6 @@ class BinaryTree {
     void printDataInLevelOrder() {
         levelOrder([](const Node * node) {
             std::cout << node->data << " ";
-            delete node;
         });
         std::cout << std::endl;
     }
@@ -94,7 +91,6 @@ class BinaryTree {
                         queue.push(currentFather->right);
                         newNeedToPopNumber++;
                     }
-
                     visitor(currentFather);
                 }
             }
@@ -113,7 +109,7 @@ int main(int argc, char const *argv[]) {
         std::cin >> elem;
         bt.addElem(elem);
     }
-
     bt.printDataInLevelOrder();
+
     return 0;
 }
