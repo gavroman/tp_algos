@@ -41,7 +41,19 @@ class AVLTree {
     AVLTree& operator=(const AVLTree&) = delete;
     AVLTree& operator=(AVLTree&&) = delete;
 
-    ~AVLTree() {}
+    ~AVLTree() {
+        kill_node_family(root);
+    }
+
+    void kill_node_family(Node * node) {
+        if(!node) {
+            return;
+        }
+        kill_node_family(node->left);
+        kill_node_family(node->right);
+        delete node;
+        return;
+    }
 
     bool find(const Key& key) {
         return _find(root, key);
@@ -112,8 +124,8 @@ class AVLTree {
                 return left;
             }
 
-            Node* min_node = find_min(right);
-            min_node->right = remove_min(right);
+            Node* min_node = find_and_remove_min(right);
+            min_node->right = right;
             min_node->left = left;
 
             return balance(min_node);
@@ -135,19 +147,17 @@ class AVLTree {
         return elem;
     }
 
-    Node* find_min(Node* node) {
+    Node* find_and_remove_min(Node*& node) {
+        Node * min_node = nullptr;
         if (!node->left) {
-            return node;
+            min_node = node;
+            node = node->right;
+            min_node->right = nullptr;
+            return min_node;
         }
-        return find_min(node->left);
-    }
-
-    Node* remove_min(Node* node) {
-        if (!node->left) {
-            return node->right;
-        }
-        node->left = remove_min(node->left);
-        return balance(node);
+        min_node = find_and_remove_min(node->left);
+        node = balance(node);
+        return min_node;
     }
 
     uint8_t height(Node* node) const {
