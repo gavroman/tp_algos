@@ -7,6 +7,17 @@ SetGraph::SetGraph(int size) :
     graph.resize(size);
 }
 
+SetGraph::SetGraph(const IGraph& g) :
+    vertices_count(g.verticesCount()) {
+    graph.resize(vertices_count);
+    for (int fromVertex = 0; fromVertex != vertices_count; fromVertex++) {
+        std::vector<int> toVertexes = g.getNextVertices(fromVertex);
+         for (const auto& toVertex : toVertexes) {
+            graph[fromVertex].emplace(toVertex);
+        }
+    }
+}
+
 SetGraph::~SetGraph() {}
 
 void SetGraph::addEdge(int from, int to) {

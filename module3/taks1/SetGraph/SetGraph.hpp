@@ -5,6 +5,7 @@
 class SetGraph : public IGraph {
  public:
     explicit SetGraph(int size);
+    SetGraph(const IGraph& g);
     ~SetGraph() override;
 
     void addEdge(int from, int to) override;

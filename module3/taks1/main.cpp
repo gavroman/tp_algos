@@ -18,57 +18,59 @@ std::ostream& operator<<(std::ostream &out, const std::vector<T>& v) {
 
 int main(int argc, char const *argv[]) {
     const int graphSize = 19;
-    IGraph* arcGraph = new ArcGraph(graphSize);
     IGraph* listGraph = new ListGraph(graphSize);
-    IGraph* matrixGraph = new MatrixGraph(graphSize);
-    IGraph* setGraph = new SetGraph(graphSize);
 
-    std::array<IGraph*,4> graphs = {arcGraph, listGraph, matrixGraph, setGraph};
+    //for (auto& graph : graphs) {
+        listGraph->addEdge(0, 1);
+        listGraph->addEdge(1, 0);
+        listGraph->addEdge(1, 15);
+        listGraph->addEdge(1, 18);
+        listGraph->addEdge(1, 9);
+        listGraph->addEdge(2, 18);
+        listGraph->addEdge(2, 3);
+        listGraph->addEdge(3, 12);
+        listGraph->addEdge(3, 13);
+        listGraph->addEdge(3, 2);
+        listGraph->addEdge(4, 10);
+        listGraph->addEdge(4, 17);
+        listGraph->addEdge(5, 17);
+        listGraph->addEdge(5, 4);
+        listGraph->addEdge(5, 8);
+        listGraph->addEdge(6, 5);
+        listGraph->addEdge(7, 0);
+        listGraph->addEdge(7, 16);
+        listGraph->addEdge(7, 6);
+        listGraph->addEdge(8, 5);
+        listGraph->addEdge(8, 6);
+        listGraph->addEdge(9, 8);
+        listGraph->addEdge(10, 13);
+        listGraph->addEdge(10, 2);
+        listGraph->addEdge(11, 12);
+        listGraph->addEdge(11, 15);
+        listGraph->addEdge(12, 13);
+        listGraph->addEdge(12, 2);
+        listGraph->addEdge(13, 4);
+        listGraph->addEdge(14, 15);
+        listGraph->addEdge(14, 7);
+        listGraph->addEdge(15, 0);
+        listGraph->addEdge(15, 11);
+        listGraph->addEdge(16, 8);
+        listGraph->addEdge(16, 9);
+        listGraph->addEdge(17, 10);
+        listGraph->addEdge(17, 8);
+        listGraph->addEdge(17, 9);
+        listGraph->addEdge(18, 12);
+        listGraph->addEdge(18, 9);
+    //}
 
-    for (auto& graph : graphs) {
-        graph->addEdge(0, 1);
-        graph->addEdge(1, 0);
-        graph->addEdge(1, 15);
-        graph->addEdge(1, 18);
-        graph->addEdge(1, 9);
-        graph->addEdge(2, 18);
-        graph->addEdge(2, 3);
-        graph->addEdge(3, 12);
-        graph->addEdge(3, 13);
-        graph->addEdge(3, 2);
-        graph->addEdge(4, 10);
-        graph->addEdge(4, 17);
-        graph->addEdge(5, 17);
-        graph->addEdge(5, 4);
-        graph->addEdge(5, 8);
-        graph->addEdge(6, 5);
-        graph->addEdge(7, 0);
-        graph->addEdge(7, 16);
-        graph->addEdge(7, 6);
-        graph->addEdge(8, 5);
-        graph->addEdge(8, 6);
-        graph->addEdge(9, 8);
-        graph->addEdge(10, 13);
-        graph->addEdge(10, 2);
-        graph->addEdge(11, 12);
-        graph->addEdge(11, 15);
-        graph->addEdge(12, 13);
-        graph->addEdge(12, 2);
-        graph->addEdge(13, 4);
-        graph->addEdge(14, 15);
-        graph->addEdge(14, 7);
-        graph->addEdge(15, 0);
-        graph->addEdge(15, 11);
-        graph->addEdge(16, 8);
-        graph->addEdge(16, 9);
-        graph->addEdge(17, 10);
-        graph->addEdge(17, 8);
-        graph->addEdge(17, 9);
-        graph->addEdge(18, 12);
-        graph->addEdge(18, 9);
 
-        assert(graph->verticesCount() == graphSize);
-    }
+    IGraph* arcGraph = new ArcGraph(*listGraph);
+    IGraph* matrixGraph = new MatrixGraph(*listGraph);
+    IGraph* setGraph = new SetGraph(*listGraph);
+
+    std::array<IGraph*,4> graphs = {listGraph ,arcGraph ,matrixGraph ,setGraph};
+
+
 
 
     for (int i = 0; i != graphSize; i++) {

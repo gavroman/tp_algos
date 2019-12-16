@@ -5,6 +5,7 @@
 class ListGraph : public IGraph {
  public:
     explicit ListGraph(int size);
+    ListGraph(const IGraph& g);
     ~ListGraph() override;
 
     void addEdge(int from, int to) override;
@@ -13,7 +14,7 @@ class ListGraph : public IGraph {
     std::vector<int> getPrevVertices(int vertex) const override;
 
  private:
-    std::vector< std::vector<int>> graph;
+    std::vector<std::vector<int>> graph;
     int vertices_count;
 };
 

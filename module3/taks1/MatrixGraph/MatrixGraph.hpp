@@ -4,6 +4,7 @@
 class MatrixGraph : public IGraph {
  public:
     explicit MatrixGraph(int size);
+    MatrixGraph(const IGraph& g);
     ~MatrixGraph() override;
 
     void addEdge(int from, int to) override;

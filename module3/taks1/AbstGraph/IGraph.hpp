@@ -4,7 +4,6 @@
 class IGraph {
  public:
     virtual ~IGraph() {}
-    // Добавление ребра от from к to.
     virtual void addEdge(int from, int to) = 0;
 
     virtual int verticesCount() const  = 0;

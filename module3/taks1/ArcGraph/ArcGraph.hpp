@@ -11,6 +11,7 @@ struct Edge {
 class ArcGraph : public IGraph {
  public:
     explicit ArcGraph(int size);
+    ArcGraph(const IGraph& g);
     ~ArcGraph() override;
 
     void addEdge(int from, int to) override;

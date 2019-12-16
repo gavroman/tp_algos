@@ -7,6 +7,18 @@ MatrixGraph::MatrixGraph(int size) :
     graph = std::vector<std::vector<bool>>(size, lineOfZero);
 }
 
+MatrixGraph::MatrixGraph(const IGraph& g) :
+    vertices_count(g.verticesCount()) {
+    std::vector<bool> lineOfZero(vertices_count, false);
+    graph = std::vector<std::vector<bool>>(vertices_count, lineOfZero);
+    for (int fromVertex = 0; fromVertex != vertices_count; fromVertex++) {
+        std::vector<int> toVertexes = g.getNextVertices(fromVertex);
+        for (const auto& toVertex : toVertexes) {
+            graph[fromVertex][toVertex] = true;
+        }
+    }
+}
+
 MatrixGraph::~MatrixGraph() {}
 
 void MatrixGraph::addEdge(int from, int to) {

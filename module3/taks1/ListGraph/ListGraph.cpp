@@ -1,7 +1,16 @@
 #include "ListGraph.hpp"
 
-ListGraph::ListGraph(int size) : vertices_count(size) {
+ListGraph::ListGraph(int size) :
+    vertices_count(size) {
     graph.resize(size);
+}
+
+ListGraph::ListGraph(const IGraph& g) :
+    vertices_count(g.verticesCount()) {
+    graph.resize(vertices_count);
+    for (int i = 0; i != vertices_count; i++) {
+        graph[i] = g.getNextVertices(i);
+    }
 }
 
 ListGraph::~ListGraph() {}
