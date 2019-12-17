@@ -58,6 +58,7 @@ std::ostream& operator<<(std::ostream &out, const std::vector<T>& v) {
 int countShortestPaths(ListGraph& graph, int startVertex, int endVertex) {
     int verticesCount = graph.size();
     std::vector<int> distances(verticesCount, INT_MAX);
+    std::vector<int> paths_number(verticesCount, 0);
     std::vector<int> parents(verticesCount, -1);
     std::queue<int> q;
     q.push(startVertex);
@@ -69,25 +70,30 @@ int countShortestPaths(ListGraph& graph, int startVertex, int endVertex) {
         for (const auto& nextVertex : nextVertices) {
             if (distances[nextVertex] == INT_MAX) {
                 distances[nextVertex] = distances[currentVertex] + 1;
+                paths_number[nextVertex] = paths_number[currentVertex];
                 parents[nextVertex] = currentVertex;
                 q.push(nextVertex);
-            } else if (distances[currentVertex] + 1 < distances[nextVertex]) {
+            } else if (distances[currentVertex] + 1 == distances[nextVertex]) {
                 distances[nextVertex] = distances[currentVertex] + 1;
+                paths_number[nextVertex] += paths_number[currentVertex];
                 parents[nextVertex] = currentVertex;
             }
         }
     }
-    std::cout << "parents: " << parents << std::endl;
-    std::cout << "distances: " << distances << std::endl;
+    // std::cout << "parents: " << parents << std::endl;
+    // std::cout << "distances: " << distances << std::endl;
 
+    // std::cout << "shortest distance : " << distances[endVertex] << std::endl;
+    // std::cout << "paths count : " << paths_number[endVertex] << std::endl;
 
-    std::cout << "shortest distance: " << distances[endVertex] << std::endl;
-    int currentVertex = endVertex;
-    while (currentVertex != startVertex) {
-        std::cout << currentVertex << "<-";
-        currentVertex = parents[currentVertex];
-    }
-    std::cout << startVertex << std::endl;
+    std::cout << paths_number[endVertex] << std::endl;
+
+    // int currentVertex = endVertex;
+    // while (currentVertex != startVertex) {
+    //     std::cout << currentVertex << "<-";
+    //     currentVertex = parents[currentVertex];
+    // }
+    // std::cout << startVertex << std::endl;
 
     return 0;
 }
@@ -112,14 +118,15 @@ void run(std::istream& input) {
     int startVertex = -1;
     int endVertex = -1;
     input >> startVertex >> endVertex;
-    int ShortestPathsNumver = countShortestPaths(graph, startVertex, endVertex);
+    int ShortestPathsNumber = countShortestPaths(graph, startVertex, endVertex);
     // for (int i = 0; i != graph.size(); i++) {
     //     std::cout << std::setw(3) << i << " vertecies: " << graph.getVertices(i) << std::endl;
     // }
 }
 
 void test() {
-    {
+    run(std::cin);
+/*    {
         std::stringstream input;
         input << "19" << std::endl;  //  vertices
         input << "37" << std::endl;  //  edges
@@ -165,7 +172,7 @@ void test() {
         input << "14 10" << std::endl;
 
         run(input);
-    }
+    }*/
     /*{
         std::stringstream input;
         input << "6" << std::endl;  //  vertices
