@@ -13,5 +13,3 @@ class IGraph {
 };
 
 #endif
-
-
