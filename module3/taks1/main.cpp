@@ -201,10 +201,9 @@ void runTests() {
             //std::cout << "============================================" << std::endl;
         }
 
-        delete graphs[0];
-        delete graphs[1];
-        delete graphs[2];
-        delete graphs[3];
+        for (auto& graph : graphs) {
+            delete graph;
+        }
     }
     {
         std::cout << "\nChecking graphs created one from another" << std::endl;
@@ -230,10 +229,9 @@ void runTests() {
             //std::cout << "============================================" << std::endl;
         }
 
-        delete graphs[0];
-        delete graphs[1];
-        delete graphs[2];
-        delete graphs[3];
+        for (auto& graph : graphs) {
+            delete graph;
+        }
     }
 }
 
